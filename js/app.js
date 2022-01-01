@@ -48,17 +48,52 @@ class UI {
      static deleteFromBook (target) {
         if (target.hasAttribute("href")) {
             target.parentElement.parentElement.remove();
+           Store.removeBook(target.parentElement.previousElementSibling.textContent.trim())
             UI.showAlert("Removed Your Book Successfully" , "success")
         }
     }
 
 }
 
+//Local Storage Class
+class Store {
+    static getBooks () {
+        let books ;
+        if (localStorage.getItem("books") === null) {
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem("books"));
+        }
+        return books ;
+    }
+
+    static addBook (book) {
+        let books = Store.getBooks();
+        books.push(book);
+        localStorage.setItem("books",JSON.stringify(books));
+    }
+    static displayBook () {
+        let books = Store.getBooks();
+        books.forEach(book => {
+            UI.addToBookList (book);
+        });
+    }
+    static removeBook (isbn) {
+        let books = Store.getBooks();
+        books.forEach((book,index) => {
+            if (book.isbn === isbn) {
+                books.splice(index , 1)
+            }
+        });
+        localStorage.setItem("books", JSON.stringify(books));
+    }
+}
 
 
 // add the event listener
 form.addEventListener("submit" , newBook);
 bookList.addEventListener("click", removeBook);
+document.addEventListener("DOMContentLoaded" , Store.displayBook())
 
 // define the function 
 function newBook (e) { 
@@ -72,7 +107,8 @@ function newBook (e) {
         let book = new Book (title, author, isbn);
         UI.addToBookList (book);
         UI.clearFields();
-        UI.showAlert("Add Your Book Successfully", "success")
+        UI.showAlert("Add Your Book Successfully", "success");
+        Store.addBook(book);
         e.preventDefault();
     }
 };
