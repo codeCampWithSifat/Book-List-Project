@@ -36,6 +36,19 @@ class UI {
          document.querySelector("#isbn").value ="";
     }
 
+    showAlert (message , className) {
+        let div = document.createElement("div");
+        div.className = `alert ${className}`;
+        div.appendChild(document.createTextNode(message));
+        let container = document.querySelector(".container");
+        let form = document.querySelector("#book-form");
+        container.insertBefore(div, form);
+
+        setTimeout(() => {
+            document.querySelector(".alert").remove()
+        }, 3000);
+    }
+
 }
 
 
@@ -54,11 +67,12 @@ function newBook (e) {
 
     let ui = new UI ;
     if (title === "" || author === "" || isbn === "") {
-        alert("Please Fill Out All The Fields")
+        ui.showAlert("Please Fill Out All The Fields" , "error")
     } else {
         let book = new Book (title, author, isbn);
         ui.addToBookList (book);
-        ui.clearFields()
+        ui.clearFields();
+        ui.showAlert("Add Your Book Successfully", "success")
         e.preventDefault();
     }
 }
